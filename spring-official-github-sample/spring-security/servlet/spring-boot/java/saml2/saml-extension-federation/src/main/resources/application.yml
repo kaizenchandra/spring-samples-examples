@@ -1,0 +1,17 @@
+logging.level:
+  org.springframework.security: TRACE
+
+spring:
+  docker:
+    compose:
+      file: classpath:docker/compose.yml
+      readiness:
+        wait: never
+  security:
+    filter:
+      dispatcher-types: async, error, request, forward
+
+saml2:
+  certificate: classpath:credentials/rp-certificate.crt
+  key: classpath:credentials/rp-private.key
+  ap.metadata: http://idp-one.127-0-0-1.nip.io/simplesaml/saml2/idp/metadata.php

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WorkspaceSettings">
+    <project name="testng" path="$PROJECT_DIR$/testng" />
+    <project name="web-test-client" path="$PROJECT_DIR$/web-test-client" />
+    <project name="restful-notes-spring-hateoas" path="$PROJECT_DIR$/restful-notes-spring-hateoas" />
+    <project name="restful-notes-spring-data-rest" path="$PROJECT_DIR$/restful-notes-spring-data-rest" />
+    <option name="workspace" value="true" />
+  </component>
+</project>

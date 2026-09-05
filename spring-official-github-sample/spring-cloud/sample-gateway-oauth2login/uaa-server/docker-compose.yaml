@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: uaa-postgres
+
+    environment:
+      POSTGRES_DB: uaa
+      POSTGRES_USER: uaa
+      POSTGRES_PASSWORD: uaa
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - uaa-postgres-data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U uaa -d uaa"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  uaa:
+    image: cloudfoundry/uaa:latest
+    container_name: uaa-server
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    ports:
+      - "8090:8080"
+
+    environment:
+      UAA_CONFIG_PATH: /uaa/config
+      UAA_ENCRYPTION_KEY_1: local-development-encryption-key-change-me
+
+      JAVA_OPTS: >-
+        -Dserver.servlet.context-path=/uaa
+        -Dlogging.config=file:/uaa/config/log4j2.properties
+        -Dspring.profiles.active=postgresql
+        -Dfile.encoding=UTF-8
+
+    volumes:
+      - ./uaa.yml:/uaa/config/uaa.yml:ro
+      - ./log4j2.properties:/uaa/config/log4j2.properties:ro
+
+volumes:
+  uaa-postgres-data:

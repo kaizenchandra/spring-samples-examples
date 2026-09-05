@@ -1,0 +1,56 @@
+buildscript {
+	repositories {
+		mavenCentral()
+		mavenLocal()
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
+	}
+}
+
+println "Cloud version [${BOM_VERSION}]"
+
+repositories {
+	mavenCentral()
+	mavenLocal()
+	maven { url "https://repo.spring.io/snapshot" }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'maven-publish'
+apply plugin: 'java-library'
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+  implementation(platform("org.springframework.cloud:spring-cloud-dependencies:${BOM_VERSION}"))
+}
+
+dependencies {
+	implementation("org.springframework.cloud:spring-cloud-contract-spec")
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		exceptionFormat = 'full'
+	}
+}
+
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+			// https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/273
+			versionMapping {
+				usage("java-api") {
+					fromResolutionOf("runtimeClasspath")
+				}
+				usage("java-runtime") {
+					fromResolutionResult()
+				}
+			}
+		}
+	}
+}

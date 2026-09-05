@@ -1,0 +1,21 @@
+Self Organizing Teams 
+==========================================
+The team includes necessary functions to get the work done and decides HOW it’s going to do its work within the given business constraints
+
+
+
+The team size is nine or fewer and manages all its dependencies and
+risks
+
+
+
+The team commits and takes responsibility for delivery
+
+
+
+The team has well defined channel for obstacle/impediment management
+
+
+
+The team communicates effectively (transparently & frequently) with
+stakeholders

@@ -1,0 +1,9 @@
+label: negative
+input:
+    triggeredBy: "triggerMessage(17)"
+outputMessage:
+    sentTo: "seda:verifications"
+    body:
+        eligible: false
+    headers:
+        contentType: application/json

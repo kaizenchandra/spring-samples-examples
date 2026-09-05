@@ -1,0 +1,56 @@
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+#    org.springframework.boot.autoconfigure: DEBUG
+spring:
+  thymeleaf:
+    cache: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            client-id: test
+            client-secret: test
+          github:
+            redirect-uri: http://localhost:8080/login/oauth2/code/github
+            client-id: test
+            client-secret: test
+          facebook:
+            client-id: your-app-client-id
+            client-secret: your-app-client-secret
+          okta:
+            client-name: okta
+            provider: okta
+            client-id: test
+            client-secret: test
+            scope: openid+profile
+            redirect-uri: http://localhost:8080/login/oauth2/code/okta
+          linkedin:
+            client-id: 868k6g73tm8njs
+            client-secret: ${LINKEDIN_CLIENT_SECRET}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/login/oauth2/code/linkedin
+            scope: openid, profile, email
+            client-name: Linkedin
+            provider: linkedin
+        provider:
+          okta:
+            issuer-uri: https://dev-87253838.okta.com
+          linkedin:
+            issuer-uri: https://www.linkedin.com/oauth
+            authorization-uri: https://www.linkedin.com/oauth/v2/authorization
+            token-uri: https://www.linkedin.com/oauth/v2/accessToken
+            user-info-uri: https://api.linkedin.com/v2/userinfo
+            jwk-set-uri: https://www.linkedin.com/oauth/openid/jwks
+            user-name-attribute: id
+
+  application:
+    name: outh2-demo

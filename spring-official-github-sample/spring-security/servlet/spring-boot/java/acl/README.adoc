@@ -1,0 +1,45 @@
+= Spring Data Sample
+
+After running this sample like so:
+
+.Java
+[source,java,role="primary"]
+----
+./gradlew :bootRun
+----
+
+Then you can query for messages using `luke/password` and `rob/password`.
+
+Because the domain objects are secured by ACLs, Rob will only see Rob's messages, and Luke will only see Luke's.
+
+For example, querying `/` with `luke`, you'll see:
+
+[source,json]
+----
+[
+    {
+        "created": "2014-07-12T10:00:00Z",
+        "id": 110,
+        "summary": "Hello Luke",
+        "text": "This message is for Luke",
+        "to": "luke"
+    },
+    {
+        "created": "2014-07-12T10:00:00Z",
+        "id": 111,
+        "summary": "Greetings Luke",
+        "text": "This message is for Luke",
+        "to": "luke"
+    },
+    {
+        "created": "2014-07-12T10:00:00Z",
+        "id": 112,
+        "summary": "Is this secure?",
+        "text": "This message is for Luke",
+        "to": "luke"
+    }
+]
+----
+
+
+Read more about https://docs.spring.io/spring-security/reference/servlet/authorization/acls.html[Authorization by ACL] in the Spring Security Reference.

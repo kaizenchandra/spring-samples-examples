@@ -1,0 +1,199 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>4.2.0-M1</version>
+		<relativePath />
+	</parent>
+
+	<groupId>org.springframework.modulith</groupId>
+	<artifactId>spring-modulith-examples</artifactId>
+	<version>2.2.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>Spring Modulith - Examples</name>
+
+	<modules>
+		<module>spring-modulith-example-epr-jdbc</module>
+		<!-- Skip because it doesn't work with Boot 4.0 RC1 for now -->
+		<!--<module>spring-modulith-example-epr-mongodb</module>-->
+		<module>spring-modulith-example-epr-neo4j</module>
+		<module>spring-modulith-example-full</module>
+		<module>spring-modulith-example-kafka</module>
+		<module>spring-modulith-example-outbox</module>
+	</modules>
+
+	<properties>
+		<java.version>17</java.version>
+		<jmolecules.version>2025.0.2</jmolecules.version>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>with-preview-repos</id>
+			<repositories>
+				<repository>
+					<id>spring-milestone</id>
+					<url>https://repo.spring.io/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>spring-snapshot</id>
+					<url>https://repo.spring.io/snapshot</url>
+					<releases>
+						<enabled>false</enabled>
+					</releases>
+				</repository>
+			</repositories>
+		</profile>
+
+		<profile>
+			<id>with-commercial-repos</id>
+			<repositories>
+				<repository>
+					<id>spring-commercial-releases</id>
+					<url>https://repo.spring.vmware.com/artifactory/spring-commercial-release-local</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>spring-commercial-snapshots</id>
+					<url>https://repo.spring.vmware.com/artifactory/spring-commercial-snapshot-local</url>
+					<releases>
+						<enabled>false</enabled>
+					</releases>
+				</repository>
+			</repositories>
+		</profile>
+
+	</profiles>
+
+	<build>
+		<defaultGoal>verify</defaultGoal>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.springframework.boot</groupId>
+							<artifactId>spring-boot-configuration-processor</artifactId>
+						</path>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.modulith</groupId>
+				<artifactId>spring-modulith-bom</artifactId>
+				<version>2.2.0-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jmolecules</groupId>
+				<artifactId>jmolecules-bom</artifactId>
+				<version>${jmolecules.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.jspecify</groupId>
+			<artifactId>jspecify</artifactId>
+			<version>1.0.0</version> <!-- explicitly declared to allow integration builds against Boot 3 -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-json</artifactId>
+		</dependency>
+
+		<!-- Testing -->
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.modulith</groupId>
+			<artifactId>spring-modulith-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Infrastructure -->
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>spring-milestone</id>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-snapshot</id>
+			<url>https://repo.spring.io/snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-milestone</id>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-snapshot</id>
+			<url>https://repo.spring.io/snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
+
+  <scm>
+    <tag>1.4.0</tag>
+  </scm>
+</project>

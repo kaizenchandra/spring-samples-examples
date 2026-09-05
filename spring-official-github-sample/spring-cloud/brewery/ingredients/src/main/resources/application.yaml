@@ -1,0 +1,36 @@
+spring.application.name: ingredients
+
+logging:
+  level.org.springframework.cloud: DEBUG
+  level.com.wavefront.spring: DEBUG
+
+server.port: ${PORT:9994}
+
+spring.rabbitmq.host: ${RABBIT_HOST:localhost}
+
+logging.file: build/ingredients.log
+
+spring.cloud.stream.binder.rabbit.default.maxConcurrency: 5
+
+endpoints.health.sensitive: false
+endpoints.default.web.enabled: true
+management.security.enabled: false
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+    baggage:
+      remote-fields:
+        - TEST-COMMUNICATION-TYPE
+      correlation:
+        fields:
+          - TEST-COMMUNICATION-TYPE
+
+logging.pattern.level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+spring.cloud.stream.source: events
+spring.cloud.stream.bindings.events-out-0.destination: events
+
+spring.config.import: "optional:configserver:"
+spring.cloud.config.label: main

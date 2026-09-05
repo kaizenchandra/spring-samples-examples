@@ -1,0 +1,22 @@
+Scrum
+===================================
+All relevant Scrum roles and events are well defined & understood
+by the team
+
+
+
+Team plans to deliver incremental customer value every sprint
+
+
+
+Product is [potentially] releasable after each and every sprint
+
+
+
+Team continuously performs backlog refinement
+
+
+
+Release planning is done based on historic velocity trend
+
+

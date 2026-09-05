@@ -1,0 +1,31 @@
+pluginManagement {
+	repositories {
+		gradlePluginPortal()
+		mavenCentral()
+		maven { url = 'https://repo.spring.io/milestone' }
+		maven { url = 'https://repo.spring.io/snapshot' }
+	}
+}
+
+plugins {
+	id 'io.spring.develocity.conventions' version '0.0.25'
+}
+
+rootProject.name = 'spring-integration-samples'
+
+['advanced', 'applications', 'basic', 'intermediate', 'dsl'].each {
+	def projectDir = new File(rootDir, it)
+	include ":${it}"
+	projectDir.eachDir { dir ->
+		if (!dir.name.startsWith('.') && 'splunk' != dir.name) {
+			include ":${dir.name}"
+			project(":${dir.name}").projectDir = new File(projectDir.absolutePath, dir.name)
+			if ('cafe' == dir.name) {
+				dir.eachDir { cafe ->
+					include ":${cafe.name}"
+					project(":${cafe.name}").projectDir = new File(dir.absolutePath, cafe.name)
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,31 @@
+RANKED BACKLOG
+---------------------------------
+
+Backlog prioritized and ranked by business value using methods like
+MoSCoW / 100 point method
+
+
+
+Product roadmap and release plan available for immediate 3 to 6 months
+
+
+
+User Stories follow concepts like INVEST, DEEP
+I INDEPENDENT
+N NEGOITIABLE
+V VALUABLE
+E ESTEEMATED
+S SMALL
+T TESTED
+
+D  DETAILED
+E  ESTEEMATED
+E  EMERGING
+P PRIOTIZED
+
+
+Acceptance criteria defined and reviewed during Backlog refinement
+
+
+
+Product Owner’s collaboration with team and stakeholders is continuous

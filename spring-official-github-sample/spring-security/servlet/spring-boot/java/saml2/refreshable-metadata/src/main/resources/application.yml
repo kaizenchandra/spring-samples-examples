@@ -1,0 +1,14 @@
+spring:
+  docker:
+    compose:
+      file: classpath:docker/compose.yml
+      readiness:
+        wait: never
+
+logging.level:
+  org.springframework.security: TRACE
+
+saml2:
+  certificate: classpath:credentials/rp-certificate.crt
+  key: classpath:credentials/rp-private.key
+  ap.metadata: http://idp-one.127-0-0-1.nip.io/simplesaml/saml2/idp/metadata.php

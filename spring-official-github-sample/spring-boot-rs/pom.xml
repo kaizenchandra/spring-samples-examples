@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.0-SNAPSHOT</version>
+		<relativePath/>
+	</parent>
+	<groupId>org.springframework.ws</groupId>
+	<artifactId>spring-ws-samples</artifactId>
+	<version>2.1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Spring Web Services Samples</name>
+	<organization>
+		<name>Broadcom Inc.</name>
+		<url>https://www.spring.io</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+
+	<properties>
+		<java.version>17</java.version>
+
+		<sourcesDir>${project.basedir}/target/generated-sources/jaxws</sourcesDir>
+		<classesDir>${project.basedir}/target/classes</classesDir>
+		<wsdl>${project.basedir}/airline/client/airline.wsdl</wsdl>
+
+		<axis.version>2.0.0</axis.version>
+		<axis2-wsdl2code-maven-plugin>1.7.9</axis2-wsdl2code-maven-plugin>
+		<jaxb2-maven-plugin.version>3.2.0</jaxb2-maven-plugin.version>
+		<jaxb30-maven-plugin.version>0.15.0</jaxb30-maven-plugin.version>
+		<jaxen.version>1.2.0</jaxen.version>
+		<jaxws-maven-plugin.version>3.0.0</jaxws-maven-plugin.version>
+		<jaxws-tools.version>3.0.2</jaxws-tools.version>
+		<jdom.version>2.0.6.1</jdom.version>
+		<jws-api.version>3.0.0</jws-api.version>
+		<spring-javaformat.version>0.0.43</spring-javaformat.version>
+		<wsdl4j.version>1.6.3</wsdl4j.version>
+		<xmlschema.version>2.3.1</xmlschema.version>
+	</properties>
+
+	<modules>
+		<module>airline/client/axis</module>
+		<module>airline/client/jax-ws</module>
+		<module>airline/client/jms</module>
+		<module>airline/client/saaj</module>
+		<module>airline/client/spring-ws</module>
+		<module>airline/server</module>
+		<module>echo/client/saaj</module>
+		<module>echo/client/spring-ws</module>
+		<module>echo/server</module>
+		<module>mtom/client/spring-ws</module>
+		<module>mtom/server</module>
+		<module>tutorial</module>
+	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.sun.xml.ws</groupId>
+				<artifactId>jaxws-tools</artifactId>
+				<version>${jaxws-tools.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.jws</groupId>
+				<artifactId>jakarta.jws-api</artifactId>
+				<version>${jws-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jaxen</groupId>
+				<artifactId>jaxen</artifactId>
+				<version>${jaxen.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-adb</artifactId>
+				<version>${axis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-transport-local</artifactId>
+				<version>${axis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-transport-http</artifactId>
+				<version>${axis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.ws.xmlschema</groupId>
+				<artifactId>xmlschema-core</artifactId>
+				<version>${xmlschema.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jdom</groupId>
+				<artifactId>jdom2</artifactId>
+				<version>${jdom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>wsdl4j</groupId>
+				<artifactId>wsdl4j</artifactId>
+				<version>${wsdl4j.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.evolvedbinary.maven.jvnet</groupId>
+					<artifactId>jaxb30-maven-plugin</artifactId>
+					<version>${jaxb30-maven-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>com.sun.xml.ws</groupId>
+					<artifactId>jaxws-maven-plugin</artifactId>
+					<version>${jaxws-maven-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.axis2</groupId>
+					<artifactId>axis2-wsdl2code-maven-plugin</artifactId>
+					<version>${axis2-wsdl2code-maven-plugin}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>jaxb2-maven-plugin</artifactId>
+					<version>${jaxb2-maven-plugin.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>io.spring.javaformat</groupId>
+				<artifactId>spring-javaformat-maven-plugin</artifactId>
+				<version>${spring-javaformat.version}</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>validate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
+
+</project>

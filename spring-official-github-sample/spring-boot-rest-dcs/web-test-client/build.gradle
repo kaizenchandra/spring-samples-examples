@@ -1,0 +1,57 @@
+plugins {
+	id "java"
+	id "org.asciidoctor.jvm.convert" version "4.0.5"
+	id "org.springframework.boot" version "4.0.0"
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+repositories {
+	mavenCentral()
+}
+
+group = 'com.example'
+
+java {
+	sourceCompatibility = 17
+	targetCompatibility = 17
+}
+
+ext {
+	snippetsDir = file('build/generated-snippets')
+}
+
+configurations {
+	asciidoctorExtensions
+}
+
+asciidoctorj {
+	version = "3.0.0"
+}
+
+dependencies {
+	asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-webtestclient'
+}
+
+tasks.named("test") {
+	useJUnitPlatform()
+	outputs.dir snippetsDir
+}
+
+tasks.named("asciidoctor") {
+	configurations "asciidoctorExtensions"
+	inputs.dir snippetsDir
+	dependsOn test
+}
+
+tasks.named("bootJar") {
+	dependsOn tasks.named("asciidoctor")
+	from ("${asciidoctor.outputDir}") {
+		into 'static/docs'
+	}
+}

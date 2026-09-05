@@ -1,0 +1,97 @@
+= SAML 2.0 Login & Logout Federation Sample using SAML Extension URLs
+
+This guide provides instructions on setting up the new Spring Security SAML 2.0 support using the endpoint URLs from the EOLd Spring Security SAML Extension.
+
+It differs from the `custom-urls` sample in that it is configured to have the registration id be the entity id for each asserting party, an important consideration when federating against hundreds of endpoints.
+This code uses `RelyingPartyRegistrations#collectionFromMetadata` to demonstrate how to copy this relying party's configuration across several arbitrary asserting party configurations returns from a single endpoint.
+
+See the https://github.com/spring-projects/spring-security/wiki/SAML-2.0-Migration-Guide[SAML 2.0 Migration Guide] for more details about the migration.
+
+== Run the Sample
+
+=== Install Docker
+
+This sample requires Docker to run a local IdP.
+As an alternative, you can point the sample at your own IdP by changing the `application.yml` here:
+
+[source,java]
+----
+spring:
+  security:
+    saml2:
+      relyingparty:
+        registration:
+          one:
+            assertingparty.metadata-uri: {your-idp-metadata-endpoint}
+// ...
+          two:
+            assertingparty.metadata-uri: {your-idp-metadata-endpoint}
+----
+
+=== Start up the Sample Boot Application
+```
+ ./gradlew :servlet:spring-boot:java:saml2:saml-extension-federation:bootRun
+```
+
+=== Open a Browser
+
+http://localhost:8080/
+
+You will be redirected to the SimpleSAMLPHP instance.
+
+=== Type in your credentials
+
+```
+User: user1
+Password: user1pass
+```
+
+== Key Changes
+
+=== URL Forwarding Filter
+
+Instead of customizing the default Spring Security configuration, a new `Filter` has been created named `SamlExtensionUrlForwardingFilter`.
+This new filter is responsible to forward from the SAML Extension URLs to the new https://docs.spring.io/spring-security/reference/servlet/saml2/login/overview.html[Spring Security SAML 2.0 support URLs].
+Below is a table with the URLs that the Filter listen to (column 1) and forwards to (column 2).
+
+
+|===
+|SAML Extension URLs |Spring Security SAML 2.0 Support URLs |Description
+
+|`/saml/SSO`
+|`/login/saml2/sso/one`
+|The URL that processes a `<saml2:Response>` from the IdP
+
+|`/saml/login`
+|`/saml2/authenticate/one`
+|The URL that triggers a SAML 2.0 Login
+
+|`/saml/logout`
+|`/logout/saml2/slo`
+|The URL that trigger an SP's initiated SAML 2.0 Logout
+
+|`/saml/SingleLogout`
+|`/logout/saml2/slo`
+|The URL that processes a `<saml2:LogoutRequest>` from the IdP
+
+|`/saml/metadata`
+|`/saml2/service-provider-metadata/one`
+|The URL that generates the SP metadata
+|===
+
+Note that the `SamlExtensionUrlForwardingFilter` has an order of `-102`, this makes it be invoked before the `FilterChainProxy`.
+
+[source,java]
+----
+@Component
+@Order(-102) // To run before FilterChainProxy
+public class SamlExtensionUrlForwardingFilter extends OncePerRequestFilter {
+	// ...
+}
+----
+
+=== `RelyingPartyMetadata` configuration component
+
+The `RelyingPartyRegistration` properties are customized to match the values that were used by the SAML Extension.
+
+These reside in `RelyingPartyMetadata`.

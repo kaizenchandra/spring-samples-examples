@@ -1,0 +1,18 @@
+
+The code (dev + test code) is clean, easy to read and anyone can change anyone else's code without a worry.
+
+
+
+Refactoring is done on a constant and frequent basis to improve code quality.
+
+
+
+Each time the code is checked in, the CI build including automated unit and smoke tests completes in 10-15 mins.
+
+
+
+Technical Debt is always kept under control by planning appropriate capacity across almost all sprints.
+
+
+
+The team performs a variety of types of automated testing including functional, performance, integration, and scalability regularly.

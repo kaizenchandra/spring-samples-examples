@@ -1,0 +1,25 @@
+MVP & MMP
+----------------------------------------------------------------------------------------------------------------------------------------
+Minimum Viable Product (MVP)
+
+Ranked backlog is used to create the slices of MVPs/MMPs
+
+
+
+Team & Product Owner collaborate to understand & decide MVP based on key personas
+
+
+
+Prototypes are planned & executed in the least expensive manner to
+validate MVP hypothesis
+
+
+
+MVP assumptions are revisited every sprint/release 
+
+
+
+Feedback from actual Siemens customers on the current MVP used to
+re-plan future MVP's
+
+

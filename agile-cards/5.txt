@@ -1,0 +1,19 @@
+Kanban
+---------------------------------------
+Team uses WIP limits to reduce cycle time and improve throughput
+
+
+
+Team uses PULL model
+
+
+
+Team uses DoD or Explicit Policies for better quality
+
+
+
+Team follows SSSF (Stop Starting, Start Finishing) approach
+
+
+
+Team uses CFD and Lead/Cycle Time Distribution metrics to identify and remove bottlenecks

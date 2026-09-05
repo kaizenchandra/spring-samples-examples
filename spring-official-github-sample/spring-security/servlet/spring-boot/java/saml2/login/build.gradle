@@ -1,0 +1,41 @@
+plugins {
+	alias(libs.plugins.org.springframework.boot)
+	alias(libs.plugins.io.spring.dependency.management)
+	id "nebula.integtest" version "8.2.0"
+	id 'java'
+}
+
+repositories {
+	mavenCentral()
+	maven { url "https://repo.spring.io/milestone" }
+	maven { url "https://repo.spring.io/snapshot" }
+	maven { url "https://build.shibboleth.net/nexus/content/repositories/releases/" }
+}
+
+dependencies {
+	constraints {
+		implementation "org.opensaml:opensaml-saml-api:5.1.3"
+		implementation "org.opensaml:opensaml-saml-impl:5.1.3"
+	}
+	implementation 'org.springframework.boot:spring-boot-security-saml2'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.security:spring-security-saml2-service-provider'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+	runtimeOnly files("$projectDir/../identity-provider/build/resources/main")
+
+	testImplementation project(":servlet:spring-boot:java:saml2:identity-provider")
+	testImplementation 'org.htmlunit:htmlunit'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-webmvc-test'
+	testImplementation 'org.springframework.boot:spring-boot-security-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	runtimeOnly "org.springframework.boot:spring-boot-docker-compose"
+}
+
+tasks.withType(Test).configureEach {
+	useJUnitPlatform()
+	
+}

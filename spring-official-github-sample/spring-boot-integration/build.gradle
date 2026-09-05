@@ -1,0 +1,409 @@
+buildscript {
+	ext {
+		kotlinVersion = '2.3.0'
+	}
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+		maven { url = 'https://repo.spring.io/milestone' }
+		maven { url = 'https://repo.spring.io/snapshot' }
+	}
+	dependencies {
+		classpath 'io.spring.gradle:dependency-management-plugin:1.1.7'
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+		classpath 'org.gretty:gretty:4.1.10'
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+		classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
+		classpath "com.google.protobuf:protobuf-gradle-plugin:0.9.6"
+	}
+}
+
+description = 'Spring Integration Samples'
+
+apply plugin: 'base'
+apply plugin: 'idea'
+
+ext {
+	linkHomepage = 'https://projects.spring.io/spring-integration'
+	linkCi = 'https://build.spring.io/browse/INTSAMPLES'
+	linkIssue = 'https://github.com/spring-projects/spring-integration-samples/issues'
+	linkScmUrl = 'https://github.com/spring-projects/spring-integration-samples'
+	linkScmConnection = 'scm:git:git://github.com/spring-projects/spring-integration-samples.git'
+	linkScmDevConnection = 'scm:git:ssh://git@github.com:spring-projects/spring-integration-samples.git'
+}
+
+allprojects {
+	group = 'org.springframework.integration.samples'
+
+	repositories {
+		mavenCentral()
+		maven { url = 'https://repo.spring.io/milestone' }
+		maven { url = 'https://repo.spring.io/snapshot' }
+//		maven { url 'https://repo.spring.io/libs-staging-local' }
+	}
+
+}
+
+subprojects { subproject ->
+
+	apply plugin: 'eclipse'
+	apply plugin: 'idea'
+	apply plugin: 'checkstyle'
+
+
+	eclipse {
+		project {
+			natures += 'org.springframework.ide.eclipse.core.springnature'
+		}
+	}
+
+	if (!(subproject.name in ['advanced', 'applications', 'basic', 'intermediate', 'dsl', 'cafe'])) {
+
+		apply plugin: 'java-library'
+		apply plugin: 'io.spring.dependency-management'
+		apply plugin: 'maven-publish'
+
+		tasks.withType(GenerateModuleMetadata) {
+			enabled = false
+		}
+
+		model {
+			tasks.generatePomFileForMavenJavaPublication {
+				destination = file('pom.xml')
+			}
+		}
+
+		tasks.register('generatePom') {
+			dependsOn('generatePomFileForMavenJavaPublication')
+		}
+
+		publishing {
+			publications {
+				mavenJava(MavenPublication) {
+					suppressAllPomMetadataWarnings()
+					from components.java
+					pom {
+						name = project.description
+						description = project.description
+						url = linkScmUrl
+						organization {
+							name = 'Spring IO'
+							url = 'https://spring.io/projects/spring-integration'
+						}
+						licenses {
+							license {
+								name = 'Apache License, Version 2.0'
+								url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+								distribution = 'repo'
+							}
+						}
+						scm {
+							url = linkScmUrl
+							connection = 'scm:git:' + linkScmConnection
+							developerConnection = 'scm:git:' + linkScmDevConnection
+						}
+						developers {
+							developer {
+								id = 'artembilan'
+								name = 'Artem Bilan'
+								email = 'artem.bilan@broadcom.com'
+								roles = ['project lead']
+							}
+							developer {
+								id = 'garyrussell'
+								name = 'Gary Russell'
+								email = 'github@gprussell.net'
+								roles = ['project lead emeritus']
+							}
+							developer {
+								id = 'markfisher'
+								name = 'Mark Fisher'
+								email = 'mark.ryan.fisher@gmail.com'
+								roles = ['project founder and lead emeritus']
+							}
+							developer {
+								id = 'cppwfs'
+								name = 'Glenn Renfro'
+								email = 'glenn.renfro@broadcom.com'
+								roles = ['project committer']
+							}
+						}
+						issueManagement {
+							system = 'GitHub'
+							url = linkIssue
+						}
+						withXml {
+							asNode().appendNode('properties').appendNode('java.version', '17')
+							if (subproject.plugins.hasPlugin('org.akhikhl.gretty')) {
+								asNode().appendNode('packaging', 'war')
+								def plugins = asNode().build?.find()?.plugins?.find()
+								if (!plugins) {
+									plugins = asNode().appendNode('build').appendNode('plugins')
+								}
+								plugins.appendNode('plugin')
+										.with {
+											appendNode('groupId', 'org.mortbay.jetty')
+											appendNode('artifactId', 'jetty-maven-plugin')
+											appendNode('version', '8.1.14.v20131031')
+											appendNode('configuration')
+													.appendNode('webAppConfig')
+													.appendNode('contextPath', '/' + subproject.name)
+										}
+							}
+							if (subproject.plugins.hasPlugin('org.springframework.boot')) {
+								asNode().get('packaging').first().value = 'jar'
+								def plugins = asNode().build?.find()?.plugins?.find()
+								if (!plugins) {
+									plugins = asNode().appendNode('build').appendNode('plugins')
+								}
+								plugins.appendNode('plugin')
+										.with {
+											appendNode('groupId', 'org.springframework.boot')
+											appendNode('artifactId', 'spring-boot-maven-plugin')
+										}
+
+								asNode().appendNode('parent').with {
+									appendNode('groupId', 'org.springframework.boot')
+									appendNode('artifactId', 'spring-boot-starter-parent')
+									appendNode('version', property('springBootVersion'))
+								}
+							}
+
+							if (subproject.plugins.hasPlugin('java-library')) {
+								def repositories = asNode().appendNode('repositories')
+								repositories.appendNode('repository')
+										.with {
+											appendNode('id', 'repo.spring.io.milestone')
+											appendNode('name', 'Spring Framework Maven Milestone Repository')
+											appendNode('url', 'https://repo.spring.io/milestone')
+										}
+								repositories.appendNode('repository')
+										.with {
+											appendNode('id', 'repo.spring.io.snapshot')
+											appendNode('name', 'Spring Framework Maven Snapshot Repository')
+											appendNode('url', 'https://repo.spring.io/snapshot')
+										}
+							}
+
+							if (subproject.plugins.hasPlugin('kotlin')) {
+								def plugins = asNode().build?.find()?.plugins?.find()
+								if (!plugins) {
+									plugins = asNode().appendNode('build').with {
+										appendNode('sourceDirectory', '${project.basedir}/src/main/kotlin')
+										appendNode('testSourceDirectory', '${project.basedir}/src/test/kotlin')
+										appendNode('plugins')
+									}
+								}
+
+								plugins.appendNode('plugin')
+										.with {
+											appendNode('groupId', 'org.jetbrains.kotlin')
+											appendNode('artifactId', 'kotlin-maven-plugin')
+											appendNode('version', property('kotlinVersion'))
+											appendNode('configuration').with {
+												appendNode('args').with {
+													appendNode('arg', '-Xjsr305=strict')
+												}
+												appendNode('compilerPlugins').with {
+													appendNode('plugin', 'spring')
+												}
+											}
+											appendNode('executions').with {
+												appendNode('execution').with {
+													appendNode('id', 'compile')
+													appendNode('phase', 'compile')
+													appendNode('goals').with {
+														appendNode('goal', 'compile')
+													}
+												}
+												appendNode('execution').with {
+													appendNode('id', 'test-compile')
+													appendNode('phase', 'test-compile')
+													appendNode('goals').with {
+														appendNode('goal', 'test-compile')
+													}
+												}
+											}
+											appendNode('dependencies').with {
+												appendNode('dependency').with {
+													appendNode('groupId', 'org.jetbrains.kotlin')
+													appendNode('artifactId', 'kotlin-maven-allopen')
+													appendNode('version', property('kotlinVersion'))
+												}
+											}
+										}
+							}
+
+							def pomDeps = asNode().dependencies.find()
+							if (!pomDeps) {
+								pomDeps = asNode().appendNode('dependencies')
+							}
+							subproject.configurations.testImplementation.dependencies.each { dep ->
+								pomDeps.appendNode('dependency').with {
+									appendNode('groupId', dep.group)
+									appendNode('artifactId', dep.name)
+									if (dep.version) {
+										appendNode('version', dep.version)
+									}
+									appendNode('scope', 'test')
+								}
+							}
+							subproject.configurations.testRuntimeOnly.dependencies.each { dep ->
+								pomDeps.appendNode('dependency').with {
+									appendNode('groupId', dep.group)
+									appendNode('artifactId', dep.name)
+									if (dep.version) {
+										appendNode('version', dep.version)
+									}
+									appendNode('scope', 'runtime')
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		checkstyle {
+			configDirectory.set(rootProject.file('src/checkstyle'))
+			toolVersion = '12.3.1'
+		}
+
+		compileJava {
+			sourceCompatibility = JavaVersion.VERSION_17
+			targetCompatibility = JavaVersion.VERSION_17
+		}
+
+		tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+			kotlinOptions {
+				jvmTarget = '17'
+			}
+		}
+
+
+		compileTestJava {
+			sourceCompatibility = JavaVersion.VERSION_17
+			targetCompatibility = JavaVersion.VERSION_17
+			options.encoding = 'UTF-8'
+		}
+
+		ext {
+			artemisVersion = '2.52.0'
+			aspectjVersion = '1.9.25.1'
+			assertjVersion = '3.27.7'
+			awaitilityVersion = '4.3.0'
+			commonsDigesterVersion = '2.1'
+			commonsDbcpVersion = '2.14.0'
+			commonsFileUploadVersion = '1.6.0'
+			commonsIoVersion = '2.21.0'
+			commonsLangVersion = '3.18.0'
+			commonsPoolVersion = '2.12.1'
+			c3p0Version = '0.14.0'
+			derbyVersion = '10.16.1.1'
+			hamcrestVersion = '2.2'
+			hibernateVersion = '7.2.1.Final'
+			hibernateValidatorVersion = '9.0.1.Final'
+			ftpServerVersion = '1.2.1'
+			flexjsonVersion = '3.3'
+			graalvmVersion = '25.0.2'
+			groovyVersion = '5.0.3'
+			grpcVersion = '1.79.0'
+			hsqldbVersion = '2.7.4'
+			h2Version = '2.4.240'
+			jacksonVersion = '2.21.0'
+			jackson3Version = '3.0.3'
+			jaxbVersion = '4.0.5'
+			jodaTimeVersion = '2.14.0'
+			jtaVersion = '2.0.1'
+			jtdsVersion = '1.3.1'
+			jmsApiVersion = '3.1.0'
+			jrubyVersion = '9.4.14.0'
+			jpaApiVersion = '3.2.0'
+			jstlVersion = '1.2'
+			junitJupiterVersion = '6.0.2'
+			log4jVersion = '2.25.4'
+			mailVersion = '2.0.5'
+			mockitoVersion = '5.21.0'
+			mongoDriverVersion = '5.6.2'
+			oracleDriverVersion = '23.26.0.0.0'
+			postgresVersion = '42.7.12'
+			protobufVersion = '4.29.4'
+			slf4jVersion = '2.0.17'
+			springCloudVersion = '2025.1.0'
+			springIntegrationVersion = '7.1.0-SNAPSHOT'
+			set('spring-integration.version', "$springIntegrationVersion")
+			springIntegrationSocialTwiterVersion = '1.0.1.BUILD-SNAPSHOT'
+			springIntegrationSplunkVersion = '1.2.0.BUILD-SNAPSHOT'
+			springVersion = '7.0.5'
+			springSecurityVersion = '7.1.0-SNAPSHOT'
+			springWebFlowVersion = '3.0.0'
+			testcontainersVersion = '2.0.3'
+			tilesJspVersion = '2.2.1'
+		}
+
+		sourceSets.each {
+			it.resources.srcDirs = ["src/${it.name}/resources", "src/${it.name}/java"]
+		}
+
+		dependencyManagement {
+			imports {
+				mavenBom "org.springframework.integration:spring-integration-bom:$springIntegrationVersion"
+				mavenBom "org.springframework:spring-framework-bom:$springVersion"
+				mavenBom "com.fasterxml.jackson:jackson-bom:$jacksonVersion"
+				mavenBom "tools.jackson:jackson-bom:$jackson3Version"
+				mavenBom "org.junit:junit-bom:$junitJupiterVersion"
+			}
+		}
+
+		// dependencies that are common across all java projects
+		dependencies {
+			testImplementation "org.hamcrest:hamcrest-library:$hamcrestVersion"
+			testImplementation("org.mockito:mockito-core:$mockitoVersion") {
+				exclude group: 'org.hamcrest'
+			}
+			testImplementation 'org.junit.jupiter:junit-jupiter-api'
+			testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+			testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+			testImplementation 'org.springframework.integration:spring-integration-test'
+		}
+
+		// enable all compiler warnings; individual projects may customize further
+		ext.xLintArg = '-Xlint:all,-options,-processing'
+		[compileJava, compileTestJava]*.options*.compilerArgs = [xLintArg]
+
+		test {
+			useJUnitPlatform()
+			// suppress all console output during testing unless running `gradle -i`
+			logging.captureStandardOutput(LogLevel.INFO)
+		}
+	}
+
+	tasks.register('cleanTarget', Delete) {
+		delete 'target'
+	}
+
+	clean.dependsOn cleanTarget
+}
+
+
+/*project('splunk') {
+	description = 'Splunk Sample'
+
+	apply plugin: 'org.springframework.boot'
+
+	dependencies {
+		api 'org.springframework.boot:spring-boot-starter-integration'
+		api 'org.springframework.integration:spring-integration-core'
+		api "org.springframework.integration:spring-integration-splunk:$springIntegrationSplunkVersion"
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	}
+
+	springBoot  {
+        mainClass = 'org.springframework.integration.samples.splunk.Application'
+	}
+
+	task run(type: JavaExec) {
+		mainClass = 'org.springframework.integration.samples.splunk.Application'
+		classpath = sourceSets.main.runtimeClasspath
+	}
+}*/
